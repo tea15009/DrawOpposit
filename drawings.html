@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrawOpposite - Gallery</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #eee;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #e60073, #ff8c00, #4caf50, #00bcd4, #9c27b0);
+            z-index: -1;
+            border-radius: 12px;
+            background-size: 400% 400%;
+            animation: gradientAnimation 10s linear infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            transition: background 0.3s ease;
+        }
+
+        .gallery-item:hover::after {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .confetti {
+            position: fixed;
+            width: 15px; /* Increased confetti size */
+            height: 15px; /* Increased confetti size */
+            background-color: #f00;
+            border-radius: 50%;
+            animation: confettiFall 3s linear infinite; /* Increased animation speed */
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>🎨 DrawOpposite Gallery</h1>
+    </header>
+
+    <div class="gallery">
+        <div class="gallery-item">
+            <img src="image1.jpg" alt="Drawing 1">
+        </div>
+        <div class="gallery-item">
+            <img src="image2.jpg" alt="Drawing 2">
+        </div>
+        <div class="gallery-item">
+            <img src="image3.jpg" alt="Drawing 3">
+        </div>
+        <div class="gallery-item">
+            <img src="image4.jpg" alt="Drawing 4">
+        </div>
+        <div class="gallery-item">
+            <img src="image5.jpg" alt="Drawing 5">
+        </div>
+        <div class="gallery-item">
+            <img src="image6.jpg" alt="Drawing 6">
+        </div>
+    </div>
+
+    <script>
+        function createConfetti() {
+            for (let i = 0; i < 75; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                confetti.style.left = `${Math.random() * 100}vw`;
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                confetti.style.animationDelay = `${Math.random() * 3}s`; // reduced delay
+                confetti.style.width = `${Math.random() * 10 + 8}px`; // Increased size range
+                confetti.style.height = `${Math.random() * 10 + 8}px`; // Increased size range
+                document.body.appendChild(confetti);
+            }
+        }
+
+        createConfetti();
+    </script>
+</body>
+</html>

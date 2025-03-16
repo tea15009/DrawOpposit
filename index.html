@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DrawOpposite</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://s.pageclip.co/v1/pageclip.css" media="screen">
+    <style>
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        body.rotating {
+            transition: transform 2s ease-in-out;
+            transform: rotate(360deg);
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>✏️ DrawOpposite</h1>
+        <p>Throw me a weird prompt, and I’ll sketch it!</p>
+    </header>
+
+    <main>
+        <form id="promptForm">
+            <label for="prompt">Drop your idea here:</label>
+            <textarea id="prompt" name="prompt" required placeholder="e.g., A cat piloting a spaceship..."></textarea>
+            <button type="button" id="submitButton">
+                <span>Send it!</span>
+            </button>
+        </form>
+        <p id="message" style="display:none;">✔️ Got it! I'll get sketching.</p>
+    </main>
+
+    <footer>
+        <a href="drawings.html">🎨 See Finished Drawings</a>
+    </footer>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        document.getElementById('submitButton').addEventListener('click', function() {
+            const prompt = document.getElementById('prompt').value;
+            const form = document.getElementById('promptForm');
+            const formData = new FormData(form);
+
+            fetch('https://send.pageclip.co/pgrVbwDQ23mXnf2EgbPZZ1DBDWYvHZaB', {
+                method: 'POST',
+                body: formData
+            }).then(() => {
+                document.getElementById('message').style.display = 'block';
+                animateGraphics();
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function animateGraphics() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const spaceship = new Image();
+            spaceship.src = 'spaceship.png'; // Replace with your spaceship image
+            let spaceshipX = canvas.width / 2;
+            let spaceshipY = canvas.height / 2;
+            let spaceshipSpeedX = 5;
+            let spaceshipSpeedY = 3;
+
+            const explosions = [];
+
+            function createExplosion(x, y) {
+                explosions.push({
+                    x: x,
+                    y: y,
+                    radius: 10,
+                    maxRadius: 50,
+                    opacity: 1,
+                    speed: 2
+                });
+            }
+
+            function drawSpaceship() {
+                ctx.drawImage(spaceship, spaceshipX, spaceshipY, 50, 50);
+
+                spaceshipX += spaceshipSpeedX;
+                spaceshipY += spaceshipSpeedY;
+
+                if (spaceshipX > canvas.width || spaceshipX < 0) {
+                    spaceshipSpeedX *= -1;
+                    createExplosion(spaceshipX, spaceshipY);
+                }
+                if (spaceshipY > canvas.height || spaceshipY < 0) {
+                    spaceshipSpeedY *= -1;
+                    createExplosion(spaceshipX, spaceshipY);
+                }
+
+            }
+
+            function drawExplosions() {
+                for (let i = explosions.length - 1; i >= 0; i--) {
+                    const explosion = explosions[i];
+                    ctx.beginPath();
+                    ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 200, 0, ${explosion.opacity})`;
+                    ctx.fill();
+
+                    explosion.radius += explosion.speed;
+                    explosion.opacity -= 0.02;
+
+                    if (explosion.radius > explosion.maxRadius || explosion.opacity <= 0) {
+                        explosions.splice(i, 1);
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawSpaceship();
+                drawExplosions();
+                requestAnimationFrame(animate);
+            }
+
+            spaceship.onload = animate;
+
+            document.body.classList.add('rotating');
+            setTimeout(() => {
+                document.body.classList.remove('rotating');
+            }, 2000);
+        }
+    </script>
+    <script src="https://s.pageclip.co/v1/pageclip.js" charset="utf-8"></script>
+</body>
+</html>
